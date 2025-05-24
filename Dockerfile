@@ -8,13 +8,13 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci
-
-# Copy source code
+# Copy source code first
 COPY src/ ./src/
 
-# Build the TypeScript
+# Install dependencies (skip prepare script initially)
+RUN npm ci --ignore-scripts
+
+# Build the TypeScript manually
 RUN npm run build
 
 # Remove dev dependencies to keep image lean
