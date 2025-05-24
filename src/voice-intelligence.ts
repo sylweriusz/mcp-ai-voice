@@ -280,9 +280,20 @@ export class VoiceIntelligence {
    */
   getUsedVoiceInfo(languageCode?: string): string {
     if (languageCode) {
-      const voice = this.getBestVoiceForLanguage(languageCode);
-      if (voice) {
-        return voice.name;
+      // Easter egg: Check if it's a voice name first
+      if (this.isVoiceName(languageCode)) {
+        const specificVoice = this.findVoiceByName(languageCode);
+        if (specificVoice) {
+          return `${specificVoice.name} (Easter Egg)`;
+        }
+        // If voice not found, indicate fallback
+        return `System Default (Voice "${languageCode}" not found)`;
+      } else {
+        // Standard language code handling
+        const voice = this.getBestVoiceForLanguage(languageCode);
+        if (voice) {
+          return voice.name;
+        }
       }
     }
     
@@ -300,6 +311,23 @@ export class VoiceIntelligence {
   }
 
   /**
+   * Check if parameter is a voice name rather than language code
+   */
+  private isVoiceName(param: string): boolean {
+    return param.length > 2 && this.platform === 'darwin';
+  }
+
+  /**
+   * Find voice by exact name match (macOS only)
+   */
+  private findVoiceByName(voiceName: string): VoiceInfo | null {
+    return this.availableVoices.find(voice => 
+      voice.id.toLowerCase() === voiceName.toLowerCase() ||
+      voice.name.toLowerCase() === voiceName.toLowerCase()
+    ) || null;
+  }
+
+  /**
    * Get optimal voice command for platform
    */
   getVoiceCommand(text: string, languageCode?: string): string {
@@ -308,9 +336,19 @@ export class VoiceIntelligence {
     switch (this.platform) {
       case 'darwin': {
         if (languageCode) {
-          const voice = this.getBestVoiceForLanguage(languageCode);
-          if (voice) {
-            return `say -v "${voice.id}" "${sanitizedText}"`;
+          // Easter egg: If it's longer than 2 chars, treat as voice name
+          if (this.isVoiceName(languageCode)) {
+            const specificVoice = this.findVoiceByName(languageCode);
+            if (specificVoice) {
+              return `say -v "${specificVoice.id}" "${sanitizedText}"`;
+            }
+            // If voice not found, fall through to default
+          } else {
+            // Standard language code handling
+            const voice = this.getBestVoiceForLanguage(languageCode);
+            if (voice) {
+              return `say -v "${voice.id}" "${sanitizedText}"`;
+            }
           }
         }
         return `say "${sanitizedText}"`;

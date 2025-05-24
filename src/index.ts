@@ -13,7 +13,7 @@ import * as os from 'os';
 import { VoiceIntelligence } from './voice-intelligence.js';
 
 /**
- * AI Voice v1.0.0
+ * AI Voice v1.0.1
  * Language-Centric Voice Synthesis Architecture
  * 
  * Paradigm: AI selects language → System optimizes voice selection
@@ -96,7 +96,7 @@ const voiceEngine = NexusVoice.getInstance();
 const server = new Server(
   {
     name: 'ai-voice',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     capabilities: {
@@ -129,7 +129,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     toolSchema.properties.language = {
       type: 'string',
       enum: supportedLanguages,
-      description: 'Language for optimal voice selection. System automatically selects the best voice for the chosen language.'
+      description: 'Language for optimal voice selection. System automatically selects the best voice for the chosen language. 🎭 Easter egg: On macOS, you can also specify exact voice names (e.g., "Fred", "Krzysztof", "Samantha") instead of language codes.'
     };
   }
 
