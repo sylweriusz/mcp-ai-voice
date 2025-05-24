@@ -5,7 +5,7 @@ Give AI a voice that works immediately. One command, zero configuration, speaks 
 ## Quick Start
 
 ```bash
-npx mcp-ai-voice
+npx @sylweriusz/mcp-ai-voice
 ```
 
 Add to Claude Desktop (`~/.claude/mcp_config.json`):
@@ -15,7 +15,7 @@ Add to Claude Desktop (`~/.claude/mcp_config.json`):
   "mcpServers": {
     "ai-voice": {
       "command": "npx",
-      "args": ["mcp-ai-voice"]
+      "args": ["@sylweriusz/mcp-ai-voice"]
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "mcp-ai-voice",
+  "name": "@sylweriusz/mcp-ai-voice",
   "version": "1.0.0",
   "description": "Enable AI agents to express themselves with natural voice synthesis. Zero-configuration multilingual speech that enhances AI interactions through asynchronous voice capabilities.",
   "main": "dist/index.js",

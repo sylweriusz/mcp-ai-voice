@@ -20,7 +20,7 @@ keywords:
 connections:
   - type: local
     command: npx
-    args: ["mcp-ai-voice"]
+    args: ["@sylweriusz/mcp-ai-voice"]
     configSchema:
       type: object
       properties: {}
