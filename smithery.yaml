@@ -3,9 +3,9 @@
 name: AI Voice Expression
 description: A zero-configuration Model Context Protocol (MCP) server that gives AI agents natural multilingual voice synthesis capabilities. Features automatic platform optimization, asynchronous speech synthesis, and instant deployment for enhanced AI interactions.
 license: MIT
-version: 2.0.0
+version: 1.0.0
 author: sylweriusz
-repository: https://github.com/sylweriusz/mcp-nexus-voice
+repository: https://github.com/sylweriusz/mcp-ai-voice
 
 # Documentation sections
 documentation:
@@ -17,12 +17,12 @@ documentation:
   installation: |
     ### Installing via NPM
     ```bash
-    npm install -g mcp-nexus-voice
+    npm install -g @sylweriusz/mcp-ai-voice
     ```
 
     ### Zero-Config Deployment
     ```bash
-    npx mcp-nexus-voice
+    npx @sylweriusz/mcp-ai-voice
     ```
 
     ### Claude Desktop Integration
@@ -30,9 +30,9 @@ documentation:
     ```json
     {
       "mcpServers": {
-        "nexus-voice": {
+        "ai-voice": {
           "command": "npx",
-          "args": ["mcp-nexus-voice"]
+          "args": ["@sylweriusz/mcp-ai-voice"]
         }
       }
     }
@@ -40,8 +40,8 @@ documentation:
 
     ### Manual Installation
     ```bash
-    git clone https://github.com/sylweriusz/mcp-nexus-voice.git
-    cd mcp-nexus-voice
+    git clone https://github.com/sylweriusz/mcp-ai-voice.git
+    cd mcp-ai-voice
     npm install
     npm run build
     npm start
@@ -111,6 +111,6 @@ startCommand:
     |-
     (config) => {
       const command = 'node';
-      const args = ['dist/index.mjs'];
+      const args = ['dist/index.js'];
       return { command, args };
     }
