@@ -1,0 +1,59 @@
+{
+  "name": "mcp-ai-voice",
+  "version": "1.0.0",
+  "description": "Enable AI agents to express themselves with natural voice synthesis. Zero-configuration multilingual speech that enhances AI interactions through asynchronous voice capabilities.",
+  "main": "dist/index.js",
+  "bin": {
+    "ai-voice": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "ai-voice",
+    "voice-synthesis",
+    "tts",
+    "speech",
+    "ai-enhancement",
+    "asynchronous",
+    "multilingual",
+    "zero-config",
+    "natural-expression",
+    "cross-platform",
+    "model-context-protocol",
+    "ai-agents",
+    "voice-capabilities"
+  ],
+  "author": "Sylweriusz",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sylweriusz/mcp-ai-voice.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sylweriusz/mcp-ai-voice/issues"
+  },
+  "homepage": "https://github.com/sylweriusz/mcp-ai-voice#readme",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "preferGlobal": true
+}

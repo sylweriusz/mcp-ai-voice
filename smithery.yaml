@@ -1,0 +1,47 @@
+name: AI Voice
+displayName: AI Voice  
+description: Enable AI agents to express themselves with natural voice synthesis. Zero-configuration multilingual speech that enhances AI interactions through asynchronous voice capabilities.
+author: Sylweriusz
+version: 1.0.0
+license: MIT
+homepage: https://github.com/sylweriusz/mcp-ai-voice
+repository: https://github.com/sylweriusz/mcp-ai-voice.git
+
+keywords:
+  - voice-synthesis
+  - ai-voice
+  - tts  
+  - speech
+  - ai-enhancement
+  - asynchronous
+  - multilingual
+  - zero-config
+
+connections:
+  - type: local
+    command: npx
+    args: ["mcp-ai-voice"]
+    configSchema:
+      type: object
+      properties: {}
+      required: []
+
+tools:
+  - name: say
+    description: "Give AI natural voice expression. Automatically selects best voice per language. Asynchronous synthesis."
+    inputSchema:
+      type: object
+      properties:
+        text:
+          type: string
+          description: "Text to speak aloud"
+        language:
+          type: string
+          description: "Language code"  
+          enum: ["en", "pl", "de", "fr", "es"]
+      required: ["text"]
+
+platforms: [macOS, Windows, Linux]
+categories: ["AI Integration Solutions", "Voice & Audio"]
+requirements:
+  nodejs: ">=18.0.0"
