@@ -75,23 +75,27 @@ documentation:
     // AI continues other tasks immediately
     ```
 
-# Preview configuration
-preview:
-  defaultCommand: node dist/index.mjs
-  examples:
-    - title: Basic Voice Expression
-      description: Simple voice synthesis with automatic language detection
-      input: |
-        {"text": "Hello! I'm excited to help you today."}
-      output: |
-        {"status": "success", "message": "Voice synthesis initiated", "platform": "macOS", "voice": "Daniel", "language": "en"}
-    
-    - title: Multilingual Expression
-      description: Language-specific voice optimization
-      input: |
-        {"text": "Witaj! Jak mogę Ci pomóc?", "language": "pl"}
-      output: |
-        {"status": "success", "message": "Voice synthesis initiated", "platform": "macOS", "voice": "Krzysztof (Enhanced)", "language": "pl"}
+# This MCP server requires local installation - it needs access to system audio
+# Cloud deployment not supported due to platform-specific voice engine requirements
+# 
+# Local installation required:
+# npm install -g @sylweriusz/mcp-ai-voice
+# 
+# Integration examples
+examples:
+  - title: Basic Voice Expression
+    description: Simple voice synthesis with automatic language detection
+    input: |
+      {"text": "Hello! I'm excited to help you today."}
+    output: |
+      {"status": "success", "message": "Voice synthesis initiated", "platform": "macOS", "voice": "Daniel", "language": "en"}
+  
+  - title: Multilingual Expression
+    description: Language-specific voice optimization
+    input: |
+      {"text": "Witaj! Jak mogę Ci pomóc?", "language": "pl"}
+    output: |
+      {"status": "success", "message": "Voice synthesis initiated", "platform": "macOS", "voice": "Krzysztof (Enhanced)", "language": "pl"}
 
 # Tools configuration for display
 tools:
