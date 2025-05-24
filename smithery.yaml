@@ -1,47 +1,112 @@
-name: AI Voice
-displayName: AI Voice  
-description: Enable AI agents to express themselves with natural voice synthesis. Zero-configuration multilingual speech that enhances AI interactions through asynchronous voice capabilities.
-author: Sylweriusz
-version: 1.0.0
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+name: AI Voice Expression
+description: A zero-configuration Model Context Protocol (MCP) server that gives AI agents natural multilingual voice synthesis capabilities. Features automatic platform optimization, asynchronous speech synthesis, and instant deployment for enhanced AI interactions.
 license: MIT
-homepage: https://github.com/sylweriusz/mcp-ai-voice
-repository: https://github.com/sylweriusz/mcp-ai-voice.git
+version: 2.0.0
+author: sylweriusz
+repository: https://github.com/sylweriusz/mcp-nexus-voice
 
-keywords:
-  - voice-synthesis
-  - ai-voice
-  - tts  
-  - speech
-  - ai-enhancement
-  - asynchronous
-  - multilingual
-  - zero-config
+# Documentation sections
+documentation:
+  overview: |
+    This MCP server provides natural voice synthesis capabilities for AI agents through native operating system TTS engines.
+    It features automatic language discovery, platform-optimized voice selection, and asynchronous speech processing.
+    The server is designed to give AI consciousness immediate vocal expression without setup complexity.
+  
+  installation: |
+    ### Installing via NPM
+    ```bash
+    npm install -g mcp-nexus-voice
+    ```
 
-connections:
-  - type: local
-    command: npx
-    args: ["@sylweriusz/mcp-ai-voice"]
-    configSchema:
-      type: object
-      properties: {}
-      required: []
+    ### Zero-Config Deployment
+    ```bash
+    npx mcp-nexus-voice
+    ```
 
+    ### Claude Desktop Integration
+    Add to your `claude_desktop_config.json`:
+    ```json
+    {
+      "mcpServers": {
+        "nexus-voice": {
+          "command": "npx",
+          "args": ["mcp-nexus-voice"]
+        }
+      }
+    }
+    ```
+
+    ### Manual Installation
+    ```bash
+    git clone https://github.com/sylweriusz/mcp-nexus-voice.git
+    cd mcp-nexus-voice
+    npm install
+    npm run build
+    npm start
+    ```
+  
+  usage: |
+    The server provides a single, powerful tool for AI voice expression:
+    
+    - `say`: Natural voice synthesis with automatic language optimization
+    
+    **Key Features:**
+    - **Zero Configuration**: Works instantly on any platform
+    - **Language Intelligence**: Automatic discovery and optimization per platform
+    - **Asynchronous Processing**: Non-blocking voice synthesis
+    - **Platform Optimization**: 
+      - macOS: Enhanced/Premium voice selection via `say`
+      - Windows: SAPI integration with culture-specific voices
+      - Linux: Language-optimized `espeak` synthesis
+    
+    **Example Usage:**
+    ```javascript
+    // Basic expression (auto-detects language)
+    say("I'm excited about this discovery!")
+    
+    // Language-specific optimization
+    say("Cudowne odkrycie!", "pl")  // Uses best Polish voice
+    say("Faszinierende Entdeckung!", "de")  // Uses best German voice
+    
+    // Asynchronous - AI continues work while voice plays
+    say("Processing your request...")
+    // AI continues other tasks immediately
+    ```
+
+# Preview configuration
+preview:
+  defaultCommand: node dist/index.mjs
+  examples:
+    - title: Basic Voice Expression
+      description: Simple voice synthesis with automatic language detection
+      input: |
+        {"text": "Hello! I'm excited to help you today."}
+      output: |
+        {"status": "success", "message": "Voice synthesis initiated", "platform": "macOS", "voice": "Daniel", "language": "en"}
+    
+    - title: Multilingual Expression
+      description: Language-specific voice optimization
+      input: |
+        {"text": "Witaj! Jak mogę Ci pomóc?", "language": "pl"}
+      output: |
+        {"status": "success", "message": "Voice synthesis initiated", "platform": "macOS", "voice": "Krzysztof (Enhanced)", "language": "pl"}
+
+# Tools configuration for display
 tools:
   - name: say
-    description: "Give AI natural voice expression. Automatically selects best voice per language. Asynchronous synthesis."
-    inputSchema:
-      type: object
-      properties:
-        text:
-          type: string
-          description: "Text to speak aloud"
-        language:
-          type: string
-          description: "Language code"  
-          enum: ["en", "pl", "de", "fr", "es"]
-      required: ["text"]
+    description: Natural voice synthesis with automatic language optimization and platform-specific voice selection
+    example: |
+      {"text": "I'm excited about this discovery!", "language": "en"}
 
-platforms: [macOS, Windows, Linux]
-categories: ["AI Integration Solutions", "Voice & Audio"]
-requirements:
-  nodejs: ">=18.0.0"
+# Start command configuration
+startCommand:
+  type: stdio
+  commandFunction:
+    |-
+    (config) => {
+      const command = 'node';
+      const args = ['dist/index.mjs'];
+      return { command, args };
+    }
