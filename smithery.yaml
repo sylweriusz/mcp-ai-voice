@@ -3,7 +3,7 @@
 name: AI Voice Expression
 description: A zero-configuration Model Context Protocol (MCP) server that gives AI agents natural multilingual voice synthesis capabilities. Features automatic platform optimization, asynchronous speech synthesis, and instant deployment for enhanced AI interactions.
 license: MIT
-version: 1.0.0
+version: 1.2.0
 author: sylweriusz
 repository: https://github.com/sylweriusz/mcp-ai-voice
 

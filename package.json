@@ -1,7 +1,7 @@
 {
   "name": "@sylweriusz/mcp-ai-voice",
-  "version": "1.0.1",
-  "description": "Enable AI agents to express themselves with natural voice synthesis. Zero-configuration multilingual speech that enhances AI interactions through asynchronous voice capabilities.",
+  "version": "1.2.0",
+  "description": "Enable AI agents to express themselves with natural voice synthesis. Hybrid architecture supporting both zero-config platform voices and premium OpenAI TTS with automatic fallback.",
   "main": "dist/index.js",
   "bin": {
     "ai-voice": "dist/index.js"
@@ -10,6 +10,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
+    "demo": "node demo.js",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -21,7 +22,10 @@
     "ai-enhancement",
     "asynchronous",
     "multilingual",
-    "zero-config",
+    "hybrid-architecture",
+    "openai-tts",
+    "premium-voices",
+    "cloud-synthesis",
     "natural-expression",
     "cross-platform",
     "model-context-protocol",
@@ -31,12 +35,14 @@
   "author": "Sylweriusz",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.6.0"
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "openai": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0"
+    "dotenv": "^16.6.1",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
