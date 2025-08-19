@@ -171,8 +171,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     echo?: unknown;
   };
 
-  console.error(`🔊 DEBUG: Received args:`, { text, language, useOpenAI, openaiVoice, openaiModel, openaiSpeed, echo });
-
   if (typeof text !== 'string') {
     throw new McpError(ErrorCode.InvalidParams, 'Text parameter must be a string');
   }
@@ -189,13 +187,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     // Echo effect options
     if (typeof echo === 'boolean') {
       hybridOptions.echo = echo;
-      console.error(`🔊 DEBUG: Set echo to boolean:`, echo);
     } else if (typeof echo === 'object' && echo !== null) {
       hybridOptions.echo = echo as any;
-      console.error(`🔊 DEBUG: Set echo to object:`, echo);
     }
-
-    console.error(`🔊 DEBUG: Final hybridOptions:`, hybridOptions);
 
     // OpenAI-specific options
     if (typeof useOpenAI === 'boolean') {
@@ -216,16 +210,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     // Asynchronous synthesis without blocking
     voiceEngine.synthesizeVoice(text, hybridOptions).then((result) => {
-      if (result.success) {
-        console.error(`✅ Voice synthesis completed using ${result.engine} engine (${result.duration}ms)`);
-        if (result.error) {
-          console.error(`⚠️  Note: ${result.error}`);
-        }
-      } else {
-        console.error(`❌ Voice synthesis failed: ${result.error}`);
-      }
+      // Silent completion - no console logging
     }).catch((error) => {
-      console.error('Voice synthesis background error:', error);
+      // Silent error handling - no console logging  
     });
 
     // Build response with enhanced information
@@ -274,24 +261,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  * Server initialization with hybrid voice intelligence
  */
 async function main() {
-  console.error('🎵 AI Voice v1.2.0 - Hybrid Voice Architecture');
-  console.error('🔍 Initializing voice ecosystem...');
-  
   // Initialize hybrid voice system
   await voiceEngine.initialize();
   
-  // Display engine status
-  const engineStatus = voiceEngine.getEngineStatus();
-  console.error('📊 Engine Status:');
-  console.error(`   🎯 Platform TTS: ${engineStatus.platform ? 'Available' : 'Unavailable'}`);
-  console.error(`   🌩️ OpenAI TTS: ${engineStatus.openai ? 'Available' : 'Unavailable (no API key)'}`);
-  console.error(`   ⭐ Preferred: ${engineStatus.preferred.toUpperCase()}`);
-  
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
-  console.error('📡 Hybrid voice synthesis ready');
-  console.error(`🎯 Platform: ${os.platform()}`);
 }
 
 // Launch server

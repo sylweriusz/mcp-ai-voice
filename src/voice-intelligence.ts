@@ -39,8 +39,6 @@ export class VoiceIntelligence {
    * Initialize voice intelligence by discovering available voices and languages
    */
   async initialize(): Promise<void> {
-    console.error('🔍 Initializing Voice Intelligence Engine...');
-    
     try {
       switch (this.platform) {
         case 'darwin':
@@ -53,14 +51,13 @@ export class VoiceIntelligence {
           await this.discoverLinuxVoices();
           break;
         default:
-          console.error(`⚠️ Unsupported platform: ${this.platform}`);
+          // Unsupported platform - silent fallback
+          break;
       }
 
       this.buildLanguageMapping();
-      console.error(`✅ Discovered ${this.supportedLanguages.length} languages with ${this.availableVoices.length} voices`);
     } catch (error) {
-      console.error('❌ Voice discovery failed:', error);
-      // Fallback to default voice without languages
+      // Silent fallback to default voice without languages
     }
   }
 
@@ -98,7 +95,7 @@ export class VoiceIntelligence {
         }
       }
     } catch (error) {
-      console.error('macOS voice discovery error:', error);
+      // Silent error handling for macOS voice discovery
     }
   }
 
@@ -135,7 +132,7 @@ export class VoiceIntelligence {
         }
       }
     } catch (error) {
-      console.error('Windows voice discovery error:', error);
+      // Silent error handling for Windows voice discovery
     }
   }
 
@@ -165,7 +162,7 @@ export class VoiceIntelligence {
         }
       }
     } catch (error) {
-      console.error('Linux voice discovery error:', error);
+      // Silent error handling for Linux voice discovery
     }
   }
 
@@ -204,8 +201,7 @@ export class VoiceIntelligence {
 
       // Special case for English: Always ensure we have a voice (fallback to first available)
       if (langCode === 'en' && sortedVoices.length === 0) {
-        // This shouldn't happen but provides safety net
-        console.error('⚠️ No English voices found - system misconfiguration');
+        // This shouldn't happen but provides safety net - silent fallback
       }
 
       this.languageMapping[langCode] = {

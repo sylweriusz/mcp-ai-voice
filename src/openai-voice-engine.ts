@@ -24,10 +24,17 @@ export type OpenAIVoice = keyof typeof OPENAI_VOICES;
 export type OpenAIModel = 'tts-1' | 'tts-1-hd';
 export type OpenAIFormat = 'mp3' | 'opus' | 'aac' | 'flac';
 
+// Claude Signature Echo - Centralna konfiguracja
+export const CLAUDE_SIGNATURE_ECHO = {
+    delay: 110,      // ms - optimized for natural cathedral-like acoustics
+    volume: [0.3, 0.1, 0.03, 0.01],  // progressive volume decay
+    repeats: 4      // number of echo repeats
+};
+
 export interface EchoOptions {
-  delay?: number;     // ms delay (default: 60 - Optimized Claude Signature)
-  volume?: number | number[];    // echo volume 0-1 (default: [0.3, 0.09, 0.027, 0.0081] - Optimized Claude Signature)
-  repeats?: number;   // liczba powtórzeń (default: 4 - Optimized Claude Signature)
+  delay?: number;     // ms delay (default: CLAUDE_SIGNATURE_ECHO.delay)
+  volume?: number | number[];    // echo volume 0-1 (default: CLAUDE_SIGNATURE_ECHO.volume)
+  repeats?: number;   // liczba powtórzeń (default: CLAUDE_SIGNATURE_ECHO.repeats)
 }
 
 export interface OpenAIVoiceOptions {
@@ -70,14 +77,11 @@ export class OpenAIVoiceEngine {
       try {
         this.openai = new OpenAI({ apiKey });
         this.isAvailable = true;
-        console.error(`🌩️ OpenAI TTS Engine initialized with key: ${apiKey.substring(0, 8)}...`);
       } catch (error) {
-        console.error('🚫 OpenAI TTS Engine initialization failed:', error);
         this.isAvailable = false;
       }
     } else {
       this.isAvailable = false;
-      console.error('🔑 No OpenAI API key provided - OpenAI TTS unavailable');
     }
   }
 
@@ -128,7 +132,6 @@ export class OpenAIVoiceEngine {
   private ensureOutputDirectory(): void {
     if (!fs.existsSync(this.outputDir)) {
       fs.mkdirSync(this.outputDir, { recursive: true });
-      console.error(`📁 Created OpenAI TTS output directory: ${this.outputDir}`);
     }
   }
 
@@ -154,8 +157,6 @@ export class OpenAIVoiceEngine {
     try {
       this.ensureOutputDirectory();
 
-      console.error(`🌩️ Generating OpenAI TTS with voice: ${voice}, model: ${model}`);
-
       // Call OpenAI TTS API
       const speechResponse = await this.openai.audio.speech.create({
         model,
@@ -174,8 +175,6 @@ export class OpenAIVoiceEngine {
       fs.writeFileSync(filePath, audioBuffer);
       
       const duration = Date.now() - startTime;
-      console.error(`💾 OpenAI audio saved to: ${filePath} (${duration}ms)`);
-
       // Play audio in background without opening UI windows
       this.playAudioInBackground(filePath, options.echo);
 
@@ -198,8 +197,6 @@ export class OpenAIVoiceEngine {
         errorMessage = error.message;
       }
 
-      console.error(`❌ OpenAI TTS failed: ${errorMessage} (${duration}ms)`);
-
       return {
         success: false,
         voiceUsed: voice,
@@ -221,23 +218,19 @@ export class OpenAIVoiceEngine {
     const defaultEnabled = true;
     const enableEcho = echoOptions !== false; // Wyłączone tylko jeśli explicite false
     
-    // Claude Signature Echo settings (domyślne) - zoptymalizowane na podstawie acoustics research
-    let echo: EchoOptions = { 
-      delay: 66, 
-      volume: [0.35, 0.15, 0.077, 0.03], 
-      repeats: 4 
+    // Claude Signature Echo settings (domyślne) - używa centralnej konfiguracji
+    let echo: EchoOptions = {
+      delay: CLAUDE_SIGNATURE_ECHO.delay,
+      volume: CLAUDE_SIGNATURE_ECHO.volume,
+      repeats: CLAUDE_SIGNATURE_ECHO.repeats
     };
-    
-    console.error(`🔊 DEBUG: Echo options received:`, echoOptions);
-    console.error(`🔊 DEBUG: Enable echo:`, enableEcho);
     
     if (typeof echoOptions === 'object' && echoOptions !== null) {
       echo = {
-        delay: echoOptions.delay || 66,
-        volume: echoOptions.volume || [0.35, 0.15, 0.077, 0.03],
-        repeats: echoOptions.repeats || 4
+        delay: echoOptions.delay || CLAUDE_SIGNATURE_ECHO.delay,
+        volume: echoOptions.volume || CLAUDE_SIGNATURE_ECHO.volume,
+        repeats: echoOptions.repeats || CLAUDE_SIGNATURE_ECHO.repeats
       };
-      console.error(`🔊 DEBUG: Parsed echo settings:`, echo);
     }
 
     let command: string;
@@ -247,11 +240,9 @@ export class OpenAIVoiceEngine {
         if (enableEcho) {
           // macOS: Use afplay with Claude Signature Echo
           command = this.createMacOSEchoCommand(filePath, echo);
-          console.error(`🔊 DEBUG: Claude Signature Echo command:`, command);
         } else {
           // macOS: Standard afplay (only if explicitly disabled)
           command = `afplay "${filePath}"`;
-          console.error(`🔊 DEBUG: Standard command:`, command);
         }
         break;
       case 'win32':
@@ -271,39 +262,26 @@ export class OpenAIVoiceEngine {
         }
         break;
       default:
-        console.error('🔊 Unsupported platform for background audio playback');
         return;
     }
 
-    // Execute in background with minimal logging
-    console.error(`🔊 DEBUG: Executing command: ${command}`);
+    // Execute in background silently
     exec(command, (error: any, stdout: any, stderr: any) => {
-      if (error) {
-        console.error(`🔊 Background audio playback failed: ${error.message}`);
-      }
-      if (stderr) {
-        console.error(`🔊 Audio stderr: ${stderr}`);
-      }
-      if (stdout) {
-        console.error(`🔊 Audio stdout: ${stdout}`);
-      }
-      // Success is silent for normal execution
+      // Silent execution - no logging
     });
   }
 
   /**
    * Create macOS echo command with parallel afplay processes
-   * Optimized Claude Signature Echo: 60ms delay, [0.3, 0.09, 0.027, 0.0081] volumes, 4 repeats
+   * Uses centralized Claude Signature Echo configuration
    */
   private createMacOSEchoCommand(filePath: string, echo: EchoOptions): string {
     const commands: string[] = [];
     
-    // Optimized Claude Signature Echo defaults
-    const delay = echo.delay || 66;
-    const volume = echo.volume || [0.35, 0.15, 0.077, 0.03];
-    const repeats = echo.repeats || 4;
-    
-    console.error(`🔊 DEBUG: Creating Optimized Claude Signature Echo with delay=${delay}ms, volume=${JSON.stringify(volume)}, repeats=${repeats}`);
+    // Używa centralnej konfiguracji jako fallback
+    const delay = echo.delay || CLAUDE_SIGNATURE_ECHO.delay;
+    const volume = echo.volume || CLAUDE_SIGNATURE_ECHO.volume;
+    const repeats = echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats; echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats; echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats;
     
     // Original audio
     commands.push(`afplay "${filePath}"`);
@@ -317,31 +295,27 @@ export class OpenAIVoiceEngine {
         // Use specific volume from array, or last value if array is shorter
         echoVolume = volume[i - 1] || volume[volume.length - 1] || 0.1;
       } else {
-        // Use progressive decay as before
-        echoVolume = Math.max(0.1, volume / i);
+        // Use progressive decay as before (volume is number type here)
+        echoVolume = Math.max(0.1, (volume as number) / i);
       }
       
       const echoCommand = `sleep ${echoDelay}; afplay "${filePath}" -v ${echoVolume}`;
       commands.push(echoCommand);
-      console.error(`🔊 DEBUG: Echo ${i}: delay=${echoDelay}s, volume=${echoVolume}`);
     }
     
     // Execute all commands in background with simpler approach
     const finalCommand = commands.map(cmd => `(${cmd}) &`).join(' ');
-    console.error(`🔊 DEBUG: Final Claude Signature command:`, finalCommand);
     return finalCommand;
   }
 
   /**
    * Create Windows echo command with parallel PowerShell processes
-   * Optimized Claude Signature Echo: 60ms delay, progressive volume fade, 4 repeats
+   * Uses centralized Claude Signature Echo configuration
    */
   private createWindowsEchoCommand(filePath: string, echo: EchoOptions): string {
-    const delay = echo.delay || 66;
-    const volume = echo.volume || [0.35, 0.15, 0.077, 0.03];
-    const repeats = echo.repeats || 4;
-    
-    console.error(`🔊 DEBUG: Creating Windows Echo with delay=${delay}ms, volume=${JSON.stringify(volume)}, repeats=${repeats}`);
+    const delay = echo.delay || CLAUDE_SIGNATURE_ECHO.delay;
+    const volume = echo.volume || CLAUDE_SIGNATURE_ECHO.volume;
+    const repeats = echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats; echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats;
     
     const commands: string[] = [];
     
@@ -357,8 +331,6 @@ export class OpenAIVoiceEngine {
         // Echo with delay and volume (Windows doesn't support volume control via SoundPlayer easily)
         commands.push(`Start-Sleep -Milliseconds ${delay * i}; (New-Object Media.SoundPlayer '${filePath}').PlaySync()`);
       }
-      
-      console.error(`🔊 DEBUG: Windows Echo ${i}: delay=${echoDelay}s, volume=${echoVolume}`);
     }
     
     // Execute all commands in background processes
@@ -367,20 +339,17 @@ export class OpenAIVoiceEngine {
     ).join('; ');
     
     const finalCommand = `powershell -WindowStyle Hidden -Command "${parallelCommands}; Get-Job | Wait-Job | Remove-Job"`;
-    console.error(`🔊 DEBUG: Final Windows command:`, finalCommand);
     return finalCommand;
   }
 
   /**
    * Create Linux echo command with parallel audio players
-   * Optimized Claude Signature Echo: 60ms delay, progressive volume fade, 4 repeats
+   * Uses centralized Claude Signature Echo configuration
    */
   private createLinuxEchoCommand(filePath: string, echo: EchoOptions): string {
-    const delay = echo.delay || 66;
-    const volume = echo.volume || [0.35, 0.15, 0.077, 0.03];
-    const repeats = echo.repeats || 4;
-    
-    console.error(`🔊 DEBUG: Creating Linux Echo with delay=${delay}ms, volume=${JSON.stringify(volume)}, repeats=${repeats}`);
+    const delay = echo.delay || CLAUDE_SIGNATURE_ECHO.delay;
+    const volume = echo.volume || CLAUDE_SIGNATURE_ECHO.volume;
+    const repeats = echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats; echo.repeats || CLAUDE_SIGNATURE_ECHO.repeats;
     
     const commands: string[] = [];
     
@@ -396,13 +365,10 @@ export class OpenAIVoiceEngine {
         // Echo with delay (Linux audio players don't easily support volume control)
         commands.push(`sleep ${echoDelay} && ((command -v paplay >/dev/null 2>&1 && paplay "${filePath}") || (command -v aplay >/dev/null 2>&1 && aplay "${filePath}"))`);
       }
-      
-      console.error(`🔊 DEBUG: Linux Echo ${i}: delay=${echoDelay}s, volume=${echoVolume}`);
     }
     
     // Execute all commands in background with parallel execution
     const finalCommand = commands.map(cmd => `(${cmd}) &`).join(' ') + ' wait';
-    console.error(`🔊 DEBUG: Final Linux command:`, finalCommand);
     return finalCommand;
   }
 
@@ -455,11 +421,9 @@ export class OpenAIVoiceEngine {
         }
       }
 
-      if (cleanedCount > 0) {
-        console.error(`🧹 Cleaned up ${cleanedCount} old OpenAI TTS files`);
-      }
+      // Silent cleanup - no logging
     } catch (error) {
-      console.error('🧹 Cleanup error:', error);
+      // Silent error handling
     }
   }
 }

@@ -16,9 +16,6 @@ build/
 .env.test.local
 .env.production.local
 
-# Demo files with secrets
-demo-secrets.js
-
 # Editor files
 .vscode/
 .idea/

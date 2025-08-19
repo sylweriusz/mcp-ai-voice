@@ -5,12 +5,12 @@
  */
 
 import { VoiceIntelligence } from './voice-intelligence.js';
-import { OpenAIVoiceEngine, OpenAIVoiceOptions, OpenAIVoiceResponse, OPENAI_VOICES, EchoOptions as OpenAIEchoOptions } from './openai-voice-engine.js';
+import { OpenAIVoiceEngine, OpenAIVoiceOptions, OpenAIVoiceResponse, OPENAI_VOICES, EchoOptions as OpenAIEchoOptions, CLAUDE_SIGNATURE_ECHO } from './openai-voice-engine.js';
 
 export interface EchoOptions {
-  delay?: number;     // ms delay (default: 200)
-  volume?: number | number[];    // echo volume 0-1 (default: 0.3) - można podać tablicę dla każdego echa
-  repeats?: number;   // liczba powtórzeń (default: 1)
+  delay?: number;     // ms delay (default: CLAUDE_SIGNATURE_ECHO.delay)
+  volume?: number | number[];    // echo volume 0-1 (default: CLAUDE_SIGNATURE_ECHO.volume) - można podać tablicę dla każdego echa
+  repeats?: number;   // liczba powtórzeń (default: CLAUDE_SIGNATURE_ECHO.repeats)
 }
 
 export interface HybridVoiceOptions {
@@ -49,17 +49,10 @@ export class VoiceEngineSelector {
     
     // Initialize OpenAI engine (will be unavailable if no API key)
     const openaiApiKey = process.env.OPENAI_API_KEY;
-    console.error(`🔑 OpenAI API Key check: ${openaiApiKey ? `Found (${openaiApiKey.substring(0, 8)}...)` : 'Not found'}`);
     this.openaiEngine = new OpenAIVoiceEngine(openaiApiKey);
     
     // Set preference based on OpenAI availability
     this.preferOpenAI = this.openaiEngine.isEngineAvailable();
-    
-    if (this.preferOpenAI) {
-      console.error('🌩️ Hybrid Voice Architecture: OpenAI TTS preferred (API key configured)');
-    } else {
-      console.error('🎯 Hybrid Voice Architecture: Platform TTS only (no OpenAI API key)');
-    }
   }
 
   /**
@@ -126,7 +119,7 @@ export class VoiceEngineSelector {
     // Echo effect parameter
     toolSchema.properties.echo = {
       type: 'boolean',
-      description: '🔊 Add echo effect to voice synthesis. Creates atmospheric depth with audio delay and volume decay. Default: Optimized Claude Signature Echo (60ms delay, natural fade).',
+      description: `🔊 Add echo effect to voice synthesis. Creates atmospheric depth with audio delay and volume decay. Default: Optimized Claude Signature Echo (${CLAUDE_SIGNATURE_ECHO.delay}ms delay, natural fade).`,
       default: true
     };
 
@@ -202,7 +195,6 @@ export class VoiceEngineSelector {
     } catch (error) {
       // Fallback logic: if OpenAI fails and fallback is enabled, try platform
       if (selectedEngine === 'openai' && this.fallbackEnabled) {
-        console.error('🔄 OpenAI TTS failed, falling back to platform engine');
         return await this.synthesizeWithPlatform(text, options, startTime, error as Error);
       }
       
@@ -218,8 +210,6 @@ export class VoiceEngineSelector {
     options: HybridVoiceOptions, 
     startTime: number
   ): Promise<VoiceEngineResponse> {
-    console.error(`🔊 SELECTOR DEBUG: Options received:`, options);
-    console.error(`🔊 SELECTOR DEBUG: Echo in options:`, options.echo);
     
     const openaiOptions: OpenAIVoiceOptions = {
       voice: options.openaiVoice,
@@ -227,8 +217,6 @@ export class VoiceEngineSelector {
       speed: options.openaiSpeed,
       echo: options.echo,
     };
-
-    console.error(`🔊 SELECTOR DEBUG: OpenAI options:`, openaiOptions);
 
     const response = await this.openaiEngine.synthesizeVoice(text, openaiOptions);
     const duration = Date.now() - startTime;
@@ -262,13 +250,8 @@ export class VoiceEngineSelector {
         const duration = Date.now() - startTime;
         
         if (error) {
-          console.error(`Platform voice synthesis error: ${error.message}`);
           reject(new Error(`Platform synthesis failed: ${error.message}`));
           return;
-        }
-        
-        if (stderr && stderr.length > 0) {
-          console.warn(`Platform voice synthesis warning: ${stderr}`);
         }
         
         resolve({
@@ -312,6 +295,5 @@ export class VoiceEngineSelector {
    */
   setFallbackEnabled(enabled: boolean): void {
     this.fallbackEnabled = enabled;
-    console.error(`🔄 Fallback ${enabled ? 'enabled' : 'disabled'}`);
   }
 }
